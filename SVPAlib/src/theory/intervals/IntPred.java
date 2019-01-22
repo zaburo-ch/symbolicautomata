@@ -59,7 +59,7 @@ public class IntPred {
 					return -1;
 				if (checkNotNull(o2).left == null)
 					return 1;
-				return o1.left - o2.left;
+				return Long.compare(o1.left.longValue(), o2.left.longValue());
 			}
 		});
 		
@@ -68,7 +68,7 @@ public class IntPred {
 			Integer left = sortLeft.get(i).left;
 			Integer right = sortLeft.get(i).right;
 			for (int j = i + 1; j < sortLeft.size() && 
-					(right == null || sortLeft.get(j).left == null || sortLeft.get(j).left <= right + 1)
+					(right == null || sortLeft.get(j).left == null || sortLeft.get(j).left.longValue() <= right.longValue() + 1)
 					; j++) {
 				if (right != null) {
 					if (sortLeft.get(j).right == null)
@@ -86,7 +86,7 @@ public class IntPred {
 			ImmutablePair<Integer, Integer> curr = ans.get(i);
 			ImmutablePair<Integer, Integer> prev = ans.get(i - 1);
 			checkArgument(checkNotNull(prev.right) < checkNotNull(curr.left));
-			checkArgument(prev.right + 1 < curr.left);
+			checkArgument(prev.right.longValue() + 1 < curr.left.longValue());
 		}
 		
 		return ans;
@@ -105,15 +105,15 @@ public class IntPred {
 		Integer end_point = null;
 		for (int i = 0; i < intervals.size(); i++) {
 			ImmutablePair<Integer, Integer> interval = intervals.get(i);
-			if (interval.left != null) {
+			if (interval.left != null && Integer.MIN_VALUE < interval.left) {
 				ret.add(ImmutablePair.of(end_point,  interval.left - 1));
 				if (interval.right == null)
 					break;
 			}
-			if (interval.right != null) {
+			if (interval.right != null && interval.right < Integer.MAX_VALUE) {
 				end_point = interval.right + 1;
 			}
-			if (i == intervals.size() - 1 && interval.right != null) { 
+			if (i == intervals.size() - 1 && interval.right != null && interval.right < Integer.MAX_VALUE) { 
 				ret.add(ImmutablePair.of(interval.right + 1,  null));
 			}
 		}
